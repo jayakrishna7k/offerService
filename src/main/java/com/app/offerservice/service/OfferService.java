@@ -17,37 +17,51 @@ public class OfferService {
     //In order to serve business logic for an api ,we call repository methods from the service methods
     @Autowired
     private OfferRepository offerRepository;
-    public List<Offer> getAllOffers(){
-    List<Offer> offers=offerRepository.findAll();
-    if(!offers.isEmpty()) {
-        return offers;
-    }
-    else{
-        throw new OfferNotFoundException("Offers are not available");
-    }
-    }
 
-    public List<Offer> getAllOffersByCategory(String category){
-        List<Offer> offers=offerRepository.findByCategory(category);
-        if(!offers.isEmpty()) {
+    public List<Offer> getAllOffers() {
+        List<Offer> offers = offerRepository.findAll();
+        if (!offers.isEmpty()) {
             return offers;
-        }
-        else{
+        } else {
             throw new OfferNotFoundException("Offers are not available");
         }
     }
 
-    public Offer save(Offer offer){
-        //please check to avoid duplicate offers
-        Offer exists=offerRepository.getOfferByName(offer.getName());
-        if(exists!=null){
-            throw new OfferAlreadyExistsException("Offer already exists with name :"+offer.getName());
+    public List<Offer> getAllOffersByCategory(String category) {
+        List<Offer> offers = offerRepository.findByCategory(category);
+        if (!offers.isEmpty()) {
+            return offers;
+        } else {
+            throw new OfferNotFoundException("Offers are not available");
         }
-        else{
+    }
+
+    public Offer save(Offer offer) {
+        //please check to avoid duplicate offers
+        Offer exists = offerRepository.getOfferByName(offer.getName());
+        if (exists != null) {
+            throw new OfferAlreadyExistsException("Offer already exists with name :" + offer.getName());
+        } else {
             return offerRepository.save(offer);
         }
     }
-    public void deleteOffer(int id){
+
+    public Offer modify(Offer offer) {
+        //please check to avoid duplicate offers
+        Offer exists = offerRepository.getOfferByName(offer.getName());
+
+        if (exists != null) {
+            exists.setCategory(offer.getCategory());
+            exists.setName(offer.getName());
+            exists.setDescription(offer.getDescription());
+            return offerRepository.save(exists);
+        } else {
+            throw new OfferNotFoundException("offer not found for modification!");
+        }
+    }
+
+
+    public void deleteOffer(int id) {
         offerRepository.deleteById(id);
         //offerRepository.delete();
 
